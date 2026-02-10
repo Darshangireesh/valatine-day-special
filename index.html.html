@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💌 Valentine's Message</title>
+    <style>
+        /* ===== GLOBAL STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffc3d4 50%, #ff8fab 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ===== FLOATING HEARTS BACKGROUND ===== */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: float 8s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ===== ENVELOPE/CARD CONTAINER ===== */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .envelope {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== DECORATIVE HEARTS ON CARD ===== */
+        .envelope::before,
+        .envelope::after {
+            content: '💕';
+            position: absolute;
+            font-size: 40px;
+            opacity: 0.3;
+        }
+
+        .envelope::before {
+            top: 15px;
+            left: 20px;
+        }
+
+        .envelope::after {
+            bottom: 15px;
+            right: 20px;
+        }
+
+        /* ===== INITIAL SCREEN (CLOSED ENVELOPE) ===== */
+        .initial-screen h1 {
+            color: #ff1744;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .initial-screen p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .open-btn {
+            background: linear-gradient(135deg, #ff1744, #ff6b9d);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 23, 68, 0.4);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .open-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 23, 68, 0.6);
+        }
+
+        .open-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* ===== QUESTION SCREEN ===== */
+        .question-screen {
+            display: none;
+        }
+
+        .question-screen.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-screen h2 {
+            color: #ff1744;
+            font-size: 2.2em;
+            margin-bottom: 40px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* ===== BUTTONS CONTAINER ===== */
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            position: relative;
+            min-height: 60px;
+        }
+
+        .btn {
+            padding: 15px 50px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        }
+
+        .no-btn {
+            background: linear-gradient(135deg, #f44336, #e91e63);
+            color: white;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* ===== SUCCESS SCREEN ===== */
+        .success-screen {
+            display: none;
+        }
+
+        .success-screen.active {
+            display: block;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .success-screen h2 {
+            color: #ff1744;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .big-heart {
+            font-size: 100px;
+            animation: heartBeat 1s infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.2);
+            }
+            50% {
+                transform: scale(1);
+            }
+        }
+
+        /* ===== CELEBRATION HEARTS ===== */
+        .celebration-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .celebration-heart {
+            position: absolute;
+            font-size: 30px;
+            animation: celebrate 2s ease-out forwards;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-500px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 600px) {
+            .envelope {
+                padding: 40px 30px;
+            }
+
+            .initial-screen h1 {
+                font-size: 2em;
+            }
+
+            .question-screen h2 {
+                font-size: 1.8em;
+            }
+
+            .btn {
+                padding: 12px 35px;
+                font-size: 1em;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .no-btn {
+                position: relative;
+                left: 0;
+                transform: none;
+                margin-top: 10px;
+            }
+        }
+
+        /* ===== HIDDEN CLASS ===== */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating hearts background animation -->
+    <div class="floating-hearts" id="floatingHearts"></div>
+
+    <!-- Main container -->
+    <div class="container">
+        <div class="envelope">
+            <!-- Initial Screen: Closed Envelope -->
+            <div class="initial-screen" id="initialScreen">
+                <h1>💌 You're a special girl in his heart</h1>
+                <p>He has a message for you...</p>
+                <button class="open-btn" id="openBtn">Open Message</button>
+            </div>
+
+            <!-- Question Screen: Will you be my Valentine? -->
+            <div class="question-screen" id="questionScreen">
+                <h2>Will you be his Valentine? 💖</h2>
+                <div class="buttons" id="buttonsContainer">
+                    <button class="btn yes-btn" id="yesBtn">YES! 💕</button>
+                    <button class="btn no-btn" id="noBtn">No</button>
+                </div>
+            </div>
+
+            <!-- Success Screen: I love you! -->
+            <div class="success-screen" id="successScreen">
+                <div class="big-heart">❤️</div>
+                <div style="color: #666; font-size: 1.1em; margin-top: 25px; line-height: 1.8; text-align: left; max-width: 450px; margin-left: auto; margin-right: auto;">
+                    <p style="margin-bottom: 15px; font-weight: 600; color: #ff1744;">Someone asked me</p>
+                    <p style="margin-bottom: 15px; font-weight: 600; color: #ff1744;">What is a True Love:</p>
+                    <p style="margin-bottom: 10px; padding-left: 20px;">I said : When it hurts you but you still wanna stay with 1% hope,</p>
+                    <p style="margin-bottom: 15px; padding-left: 20px; font-weight: 600; color: #ff1744;">That IS love</p>
+                    <p style="margin-top: 25px; text-align: right; font-style: italic; color: #ff1744; font-weight: bold;">- by Kavyaloka</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container for celebration hearts -->
+    <div class="celebration-hearts" id="celebrationHearts"></div>
+
+    <script>
+        // ===== ELEMENT REFERENCES =====
+        const openBtn = document.getElementById('openBtn');
+        const initialScreen = document.getElementById('initialScreen');
+        const questionScreen = document.getElementById('questionScreen');
+        const successScreen = document.getElementById('successScreen');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        const celebrationHearts = document.getElementById('celebrationHearts');
+        const floatingHearts = document.getElementById('floatingHearts');
+
+        // ===== CREATE FLOATING BACKGROUND HEARTS =====
+        function createFloatingHearts() {
+            const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💝'];
+            
+            // Create 15 floating hearts at random positions
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 8 + 's';
+                heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                floatingHearts.appendChild(heart);
+            }
+        }
+
+        // ===== OPEN MESSAGE BUTTON =====
+        openBtn.addEventListener('click', () => {
+            initialScreen.classList.add('hidden');
+            questionScreen.classList.add('active');
+        });
+
+        // ===== NO BUTTON DODGE BEHAVIOR =====
+        // When mouse enters the NO button, move it to a random position
+        noBtn.addEventListener('mouseenter', () => {
+            dodgeButton();
+        });
+
+        // Also dodge on touch devices (mobile)
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            dodgeButton();
+        });
+
+        function dodgeButton() {
+            // Get the container dimensions
+            const container = buttonsContainer.getBoundingClientRect();
+            const button = noBtn.getBoundingClientRect();
+            
+            // Calculate safe area to move the button
+            const maxX = window.innerWidth - button.width - 40;
+            const maxY = window.innerHeight - button.height - 40;
+            
+            // Generate random position
+            let newX = Math.random() * maxX;
+            let newY = Math.random() * maxY;
+            
+            // Ensure minimum distance from current position (so it actually moves)
+            const minDistance = 100;
+            const currentX = button.left;
+            const currentY = button.top;
+            
+            while (Math.abs(newX - currentX) < minDistance && Math.abs(newY - currentY) < minDistance) {
+                newX = Math.random() * maxX;
+                newY = Math.random() * maxY;
+            }
+            
+            // Move the button to new position
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+            noBtn.style.transform = 'none';
+        }
+
+        // ===== YES BUTTON BEHAVIOR =====
+        yesBtn.addEventListener('click', () => {
+            // Hide the question screen
+            questionScreen.classList.remove('active');
+            
+            // Show the success screen
+            successScreen.classList.add('active');
+            
+            // Create celebration hearts animation
+            createCelebrationHearts();
+        });
+
+        // ===== CELEBRATION HEARTS ANIMATION =====
+        function createCelebrationHearts() {
+            const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💝', '💘'];
+            
+            // Create 20 hearts that float up from random positions
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'celebration-heart';
+                    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.bottom = '0';
+                    heart.style.animationDelay = '0s';
+                    celebrationHearts.appendChild(heart);
+                    
+                    // Remove heart after animation completes
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 2000);
+                }, i * 100); // Stagger the hearts
+            }
+        }
+
+        // ===== INITIALIZE =====
+        // Create floating background hearts when page loads
+        createFloatingHearts();
+    </script>
+</body>
+</html>
